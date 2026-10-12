@@ -24,7 +24,7 @@ Regra de acesso: só o dono do painel (o admin) e editores convidados leem e esc
 
 | Campo | Tipo | Notas |
 |---|---|---|
-| `rules` | texto (Markdown) | Conteúdo de `docs/regras-editoriais.md`. O admin pode pedir ao Claude para o ajustar. |
+| `rules` | texto (Markdown) | Conteúdo inicial do ficheiro `regras-editoriais.md`. O admin pode pedir ao Claude para o ajustar. |
 | `updatedAt` | ISO 8601 | |
 
 ## `templates/<id>` — templates de email
@@ -35,7 +35,7 @@ Ids: `briefing`, `cartoes`, `carta` (e outras que o admin peça).
 |---|---|---|
 | `name` | texto | Ex.: `Briefing Executivo` |
 | `description` | texto | Uma linha |
-| `html` | texto | HTML com marcadores `{{…}}` (ver ficheiros em `templates/`) |
+| `html` | texto | HTML com marcadores `{{…}}` (ver ficheiros `template-*.html`) |
 | `updatedAt` | ISO 8601 | |
 
 ## `recipients/<email>` — destinatários (1 documento por pessoa)

@@ -1,7 +1,7 @@
 # Tarefa agendada 1 — Preparar a edição
 
 > **Agendamento por defeito:** quinta-feira às 18:00 (Europe/Lisbon).
-> Este texto é o *prompt* da tarefa agendada. Na instalação, o Claude substitui `{{PAINEL_URL}}` pelo URL do teu painel e cria a tarefa com ele. Não é preciso editar à mão.
+> Este texto é o *prompt* da tarefa agendada. Na instalação, o Claude cria a tarefa e substitui `{{PAINEL_URL}}` pelo URL do teu painel e cria a tarefa com ele. Não é preciso editar à mão.
 
 ---
 

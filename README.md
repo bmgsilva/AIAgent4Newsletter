@@ -38,17 +38,27 @@ Dia e hora são configuráveis: basta pedir no Projeto ("muda o envio para segun
 
 ### 1. Descarregar os ficheiros
 
-Neste repositório, carregue em **Code › Download ZIP** e descomprima.
+Neste repositório, carregue em **Code › Download ZIP** e descomprima. Tudo o que vai para o Claude está na pasta **`projeto-claude/`**:
+
+```
+projeto-claude/
+├── instrucoes-do-projeto.md     → colar no campo "Instruções" do Projeto
+└── ficheiros-do-projeto/        → arrastar todos para os ficheiros do Projeto
+    ├── painel.html
+    ├── template-briefing.html
+    ├── template-cartoes.html
+    ├── template-carta.html
+    ├── tarefa-preparar-edicao.md
+    ├── tarefa-enviar-edicao.md
+    ├── modelo-de-dados.md
+    └── regras-editoriais.md
+```
 
 ### 2. Criar o Projeto no Claude
 
-1. Em claude.ai, crie um Projeto novo, por exemplo **"Newsletter IA"**.
-2. Abra o ficheiro [`project-instructions.md`](project-instructions.md), copie tudo o que está abaixo da linha `---` e cole no campo **Instruções** do Projeto.
-3. Adicione ao conhecimento do Projeto estes ficheiros (arraste-os):
-   - `painel/painel.html`
-   - `templates/briefing.html`, `templates/cartoes.html`, `templates/carta.html`
-   - `tasks/preparar-edicao.md`, `tasks/enviar-edicao.md`
-   - `docs/modelo-de-dados.md`, `docs/regras-editoriais.md`
+1. Em claude.ai, abra **Projetos** e crie um Projeto novo, por exemplo **"Newsletter IA"**.
+2. Abra `projeto-claude/instrucoes-do-projeto.md` num editor de texto, copie **todo** o conteúdo e cole-o no campo **Instruções** do Projeto.
+3. Selecione os **8 ficheiros** da pasta `projeto-claude/ficheiros-do-projeto/` e arraste-os de uma só vez para a área de ficheiros (conhecimento) do Projeto.
 
 ### 3. Ligar o Gmail
 
@@ -127,20 +137,25 @@ O botão **Pausar newsletter**, no topo, suspende tudo até carregar em **Retoma
 ## Estrutura do repositório
 
 ```
-├── README.md                    este guia
-├── project-instructions.md      instruções a colar no Projeto Claude
-├── painel/painel.html           painel de gestão (publicado como artifact na instalação)
-├── templates/                   briefing.html, cartoes.html, carta.html
-├── tasks/                       prompts das duas tarefas agendadas
-└── docs/
-    ├── modelo-de-dados.md       como os dados estão organizados no painel
-    └── regras-editoriais.md     critérios de seleção e de escrita das notícias
+├── README.md                                este guia
+├── LICENSE
+└── projeto-claude/
+    ├── instrucoes-do-projeto.md             instruções a colar no Projeto Claude
+    └── ficheiros-do-projeto/
+        ├── painel.html                      painel de gestão (publicado como artifact na instalação)
+        ├── template-briefing.html           template "Briefing Executivo"
+        ├── template-cartoes.html            template "Cartões"
+        ├── template-carta.html              template "Carta"
+        ├── tarefa-preparar-edicao.md        prompt da tarefa agendada de quinta
+        ├── tarefa-enviar-edicao.md          prompt da tarefa agendada de sexta
+        ├── modelo-de-dados.md               como os dados estão organizados no painel
+        └── regras-editoriais.md             critérios de seleção, fontes e língua
 ```
 
 ## Personalizar
 
 - **Temas**: para mudar a divisão 3+2 ou acrescentar outro setor, peça no Projeto ("passa a ter 2 notícias gerais, 2 de automóvel e 1 de saúde") — o Claude atualiza as regras editoriais e as templates.
-- **Regras editoriais**: o ficheiro `docs/regras-editoriais.md` é a versão inicial; depois da instalação, as regras em uso ficam no painel e podem ser ajustadas por conversa.
+- **Regras editoriais**: o ficheiro `regras-editoriais.md` é a versão inicial; depois da instalação, as regras em uso ficam no painel e podem ser ajustadas por conversa.
 
 ## Licença
 
