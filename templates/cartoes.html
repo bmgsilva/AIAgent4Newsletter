@@ -1,0 +1,93 @@
+<!--
+  TEMPLATE: cartoes  ("Cartões")
+  Mais visual: cabeçalho escuro, um cartão por notícia, imagem opcional por notícia.
+  Marcadores: os mesmos da template "briefing", mais:
+    {{#IMAGE_URL}}…{{/IMAGE_URL}}  bloco opcional — só incluir se a notícia tiver uma imagem
+                                    pública (ex.: a og:image do artigo, URL https absoluto).
+                                    Se não houver imagem, apagar o bloco inteiro.
+  Regras: estilos inline, largura máx. 600px, imagens com width e alt.
+-->
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{NEWSLETTER_NAME}} #{{EDITION_NUMBER}}</title>
+</head>
+<body style="margin:0;padding:0;background:#e9edf2;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">{{PREHEADER}}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e9edf2;">
+<tr><td align="center" style="padding:24px 12px;">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;">
+
+    <!-- Cabeçalho -->
+    <tr><td style="background:#14213d;padding:30px 28px;border-radius:10px 10px 0 0;">
+      <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#9fb3d1;">Edição #{{EDITION_NUMBER}} · {{DATE_LABEL}}</div>
+      <div style="font-family:Arial,Helvetica,sans-serif;font-size:30px;font-weight:bold;color:#ffffff;padding-top:6px;">{{NEWSLETTER_NAME}}</div>
+      <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#dbe4f0;padding-top:12px;">{{INTRO}}</div>
+    </td></tr>
+
+    <!-- Número da semana -->
+    <tr><td style="background:#fca311;padding:18px 28px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td width="120" style="font-family:Arial,Helvetica,sans-serif;font-size:34px;font-weight:bold;color:#14213d;white-space:nowrap;">{{NUMBER_VALUE}}</td>
+        <td style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#14213d;">{{NUMBER_LABEL}} <a href="{{NUMBER_URL}}" style="color:#14213d;">Fonte</a></td>
+      </tr></table>
+    </td></tr>
+
+    <tr><td style="background:#ffffff;padding:8px 20px 4px;border-radius:0 0 10px 10px;">
+
+      <!-- IA no mundo -->
+      <div style="font-family:Arial,Helvetica,sans-serif;padding:18px 8px 6px;">
+        <span style="display:inline-block;background:#e0e8f5;color:#14213d;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:20px;">IA no mundo</span>
+      </div>
+      {{#GERAL}}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:10px 0;border:1px solid #e3e8ef;border-radius:8px;">
+        {{#IMAGE_URL}}<tr><td><img src="{{IMAGE_URL}}" width="558" alt="{{TITLE}}" style="display:block;width:100%;max-width:558px;height:auto;border-radius:8px 8px 0 0;"></td></tr>{{/IMAGE_URL}}
+        <tr><td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif;">
+          <a href="{{URL}}" style="font-size:18px;font-weight:bold;line-height:1.3;color:#14213d;text-decoration:none;">{{TITLE}}</a>
+          <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#3d4756;">{{SUMMARY}}</p>
+          <p style="margin:10px 0 0;padding:10px 12px;background:#f4f7fb;font-size:13px;line-height:1.5;color:#14213d;border-radius:6px;"><strong>Porque importa:</strong> {{WHY}}</p>
+          <p style="margin:10px 0 0;font-size:12px;color:#7a8596;">{{SOURCE}} · {{DATE}} · <a href="{{URL}}" style="color:#14213d;font-weight:bold;">Ler artigo</a></p>
+        </td></tr>
+      </table>
+      {{/GERAL}}
+
+      <!-- IA ao volante -->
+      <div style="font-family:Arial,Helvetica,sans-serif;padding:22px 8px 6px;">
+        <span style="display:inline-block;background:#fde9c8;color:#7a4a00;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:20px;">IA ao volante</span>
+      </div>
+      {{#AUTO}}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:10px 0;border:1px solid #f1dfbf;border-radius:8px;">
+        {{#IMAGE_URL}}<tr><td><img src="{{IMAGE_URL}}" width="558" alt="{{TITLE}}" style="display:block;width:100%;max-width:558px;height:auto;border-radius:8px 8px 0 0;"></td></tr>{{/IMAGE_URL}}
+        <tr><td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif;">
+          <a href="{{URL}}" style="font-size:18px;font-weight:bold;line-height:1.3;color:#14213d;text-decoration:none;">{{TITLE}}</a>
+          <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#3d4756;">{{SUMMARY}}</p>
+          <p style="margin:10px 0 0;padding:10px 12px;background:#fff6e6;font-size:13px;line-height:1.5;color:#5c3800;border-radius:6px;"><strong>Porque importa:</strong> {{WHY}}</p>
+          <p style="margin:10px 0 0;font-size:12px;color:#7a8596;">{{SOURCE}} · {{DATE}} · <a href="{{URL}}" style="color:#14213d;font-weight:bold;">Ler artigo</a></p>
+        </td></tr>
+      </table>
+      {{/AUTO}}
+
+      <!-- Para discutir -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0 18px;background:#14213d;border-radius:8px;">
+        <tr><td style="padding:18px 20px;font-family:Arial,Helvetica,sans-serif;">
+          <div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#fca311;font-weight:bold;">Para discutir na aula</div>
+          <div style="font-size:17px;line-height:1.45;color:#ffffff;padding-top:6px;">{{DISCUSSION_QUESTION}}</div>
+        </td></tr>
+      </table>
+
+    </td></tr>
+
+    <!-- Rodapé -->
+    <tr><td style="padding:18px 12px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#6b7686;text-align:center;">
+      {{NEWSLETTER_NAME}} · preparada com o Claude e revista por {{SENDER_NAME}}.<br>
+      Recebe este email porque faz parte de: {{AUDIENCE}}.<br>
+      Para deixar de receber, responda com a palavra <strong>SAIR</strong>.
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
+</body>
+</html>

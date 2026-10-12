@@ -1,0 +1,441 @@
+<title>Painel da Newsletter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: secretária de redação — cabeçalho com estado da newsletter, separadores, uma coluna de trabalho + pré-visualização do email */
+:root {
+  --bg: #eef1f5;
+  --surface: #ffffff;
+  --ink: #15233a;
+  --muted: #5d6b80;
+  --line: #d6dce5;
+  --accent: #1f4f8f;
+  --accent-ink: #ffffff;
+  --auto: #b4531b;
+  --ok: #1d7a4a; --ok-bg: #e2f3e9;
+  --warn: #9a6200; --warn-bg: #fdf0d4;
+  --bad: #a3322b; --bad-bg: #fbe5e3;
+  --idle: #5d6b80; --idle-bg: #e8ecf1;
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1622; --surface: #172131; --ink: #e6ecf5; --muted: #9aa8bd; --line: #2b384c;
+  --accent: #7fb0f0; --accent-ink: #0f1622; --auto: #f0a070;
+  --ok: #7fd3a5; --ok-bg: #173527; --warn: #f2c06a; --warn-bg: #3a2c10;
+  --bad: #f19b93; --bad-bg: #3d1d1b; --idle: #9aa8bd; --idle-bg: #232f42; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1622; --surface: #172131; --ink: #e6ecf5; --muted: #9aa8bd; --line: #2b384c;
+  --accent: #7fb0f0; --accent-ink: #0f1622; --auto: #f0a070;
+  --ok: #7fd3a5; --ok-bg: #173527; --warn: #f2c06a; --warn-bg: #3a2c10;
+  --bad: #f19b93; --bad-bg: #3d1d1b; --idle: #9aa8bd; --idle-bg: #232f42; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font-body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: 1.9rem; font-weight: 700; }
+h2 { font-size: 1.3rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 700; }
+.mono { font-family: var(--font-mono); font-size: .85em; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+header.top { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; justify-content: space-between; padding-bottom: 16px; border-bottom: 2px solid var(--ink); }
+.top .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; }
+.kv { display: grid; gap: 2px; }
+.kv b { font-weight: 600; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.s-pending, .s-changes_requested { color: var(--warn); background: var(--warn-bg); }
+.s-approved, .s-sent, .s-on { color: var(--ok); background: var(--ok-bg); }
+.s-skipped, .s-off { color: var(--idle); background: var(--idle-bg); }
+.s-error { color: var(--bad); background: var(--bad-bg); }
+
+nav.tabs { display: flex; gap: 4px; overflow-x: auto; margin: 18px 0 20px; border-bottom: 1px solid var(--line); }
+nav.tabs button { border: 0; background: none; color: var(--muted); font: 600 .92rem var(--font-body); padding: 10px 14px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+nav.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+nav.tabs button:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.stack { display: grid; gap: 16px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+button.btn { font: 600 .9rem var(--font-body); border-radius: 6px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+button.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.btn.danger { color: var(--bad); }
+button.btn:disabled { opacity: .5; cursor: not-allowed; }
+button.link { border: 0; background: none; color: var(--accent); font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+
+label { font-weight: 600; font-size: .85rem; display: grid; gap: 4px; }
+input, select, textarea { font: 400 .95rem var(--font-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; }
+textarea { min-height: 84px; resize: vertical; }
+.form { display: grid; gap: 12px; }
+.form .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+.news { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.news li { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+.news .n { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--accent); line-height: 1.2; }
+.news li.auto .n { color: var(--auto); }
+.news .t { font-weight: 600; }
+.news .why { font-size: .88rem; color: var(--muted); margin-top: 2px; }
+.news a { color: inherit; }
+.sec-label { margin-top: 10px; }
+.sec-label.auto { color: var(--auto); }
+.big { display: flex; gap: 14px; align-items: baseline; padding: 12px 14px; background: var(--bg); border-radius: 6px; }
+.big strong { font-family: var(--font-display); font-size: 1.8rem; color: var(--accent); white-space: nowrap; }
+.q { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; font-family: var(--font-display); font-size: 1.05rem; }
+
+.preview { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #ffffff; }
+.preview .bar { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--line); font-size: .82rem; color: var(--muted); }
+.preview iframe { width: 100%; height: 760px; border: 0; display: block; background: #ffffff; }
+
+.table-wrap { overflow-x: auto; }
+table.list { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+table.list th { text-align: left; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }
+table.list td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.list tr.inactive td { color: var(--muted); }
+
+.tpls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.tpl { text-align: left; border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: var(--surface); color: var(--ink); cursor: pointer; font: inherit; display: grid; gap: 6px; }
+.tpl[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.tpl .tag { justify-self: start; }
+
+.empty { text-align: center; padding: 40px 16px; color: var(--muted); display: grid; gap: 8px; justify-items: center; }
+.empty h3 { color: var(--ink); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: .9rem; max-width: calc(100% - 32px); }
+.confirm { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+.note { font-size: .85rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="kv">
+      <span class="eyebrow">Painel da newsletter</span>
+      <h1 id="nlName">Newsletter</h1>
+    </div>
+    <div class="meta">
+      <div class="kv"><span class="eyebrow">Estado</span><span id="activePill" class="pill s-off">A carregar</span></div>
+      <div class="kv"><span class="eyebrow">Preparação</span><b id="prepSched">—</b></div>
+      <div class="kv"><span class="eyebrow">Envio</span><b id="sendSched">—</b></div>
+      <div class="kv"><span class="eyebrow">Destinatários</span><b id="recCount">—</b></div>
+      <button class="btn" id="toggleActive" type="button" hidden>Pausar</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="semana" aria-selected="true">Esta semana</button>
+    <button role="tab" data-tab="dest" aria-selected="false">Destinatários</button>
+    <button role="tab" data-tab="tpl" aria-selected="false">Template</button>
+    <button role="tab" data-tab="hist" aria-selected="false">Histórico</button>
+    <button role="tab" data-tab="def" aria-selected="false">Definições</button>
+  </nav>
+
+  <main>
+    <section id="tab-semana" data-pane="semana"></section>
+    <section id="tab-dest" data-pane="dest" hidden></section>
+    <section id="tab-tpl" data-pane="tpl" hidden></section>
+    <section id="tab-hist" data-pane="hist" hidden></section>
+    <section id="tab-def" data-pane="def" hidden></section>
+  </main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  const STATUS = {
+    pending: "À espera de aprovação",
+    changes_requested: "Alterações pedidas",
+    approved: "Aprovada",
+    sent: "Enviada",
+    skipped: "Não enviada"
+  };
+  const TPL_FALLBACK = {
+    briefing: { name: "Briefing Executivo", description: "Sóbrio e rápido de ler: título, resumo e porque importa." },
+    cartoes: { name: "Cartões", description: "Visual: um cartão por notícia, com imagem quando existe." },
+    carta: { name: "Carta", description: "Tom pessoal, quase texto simples. A que chega melhor à caixa de entrada." }
+  };
+
+  const state = { db: null, canWrite: false, settings: null, settingsVer: null, editions: [], recipients: [], templates: {}, tab: "semana", confirmSkip: false, showNotes: false, previewTpl: null };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const now = () => new Date().toISOString();
+  const fmtDate = (iso) => { if (!iso) return "—"; try { return new Date(iso).toLocaleString("pt-PT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return iso; } };
+
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600); }
+  function errMsg(e) {
+    const c = e && e.code;
+    if (c === "invalid_argument") return "Sem permissão para alterar este painel.";
+    if (c === "quota_exceeded") return "A base de dados do painel está cheia.";
+    return "Não foi possível gravar. Tente de novo.";
+  }
+  async function write(path, data, mode) {
+    if (!state.db) return false;
+    try { const ref = state.db.doc(path); if (mode === "set") await ref.set(data); else await ref.update(data); return true; }
+    catch (e) { toast(errMsg(e)); return false; }
+  }
+
+  // ---------- Tabs ----------
+  try { const saved = localStorage.getItem("nl-tab"); if (saved) state.tab = saved; } catch (e) {}
+  document.querySelectorAll("nav.tabs button").forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
+  function setTab(t) {
+    state.tab = t;
+    try { localStorage.setItem("nl-tab", t); } catch (e) {}
+    document.querySelectorAll("nav.tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === t)));
+    document.querySelectorAll("[data-pane]").forEach((p) => { p.hidden = p.dataset.pane !== t; });
+  }
+  setTab(state.tab);
+
+  // ---------- Template rendering (Mustache mínimo) ----------
+  function fill(tpl, ed, s) {
+    if (!tpl) return "";
+    const items = ed.items || [];
+    const geral = items.filter((i) => i.section === "geral");
+    const auto = items.filter((i) => i.section === "auto");
+    const sect = (html, name, list, offset) => html.replace(new RegExp("{{#" + name + "}}([\\s\\S]*?){{/" + name + "}}", "g"), (_, block) =>
+      list.map((it, idx) => {
+        let b = block.replace(/{{#IMAGE_URL}}([\s\S]*?){{\/IMAGE_URL}}/g, (m, inner) => it.imageUrl ? inner : "");
+        const map = { TITLE: it.title, SUMMARY: it.summary, WHY: it.whyItMatters, SOURCE: it.source, URL: it.url, DATE: it.publishedAt, IMAGE_URL: it.imageUrl, N: offset + idx + 1 };
+        return b.replace(/{{(\w+)}}/g, (m, k) => k in map ? esc(map[k]) : m);
+      }).join(""));
+    let h = tpl.replace(/<!--[\s\S]*?-->/, "");
+    h = sect(h, "GERAL", geral, 0);
+    h = sect(h, "AUTO", auto, geral.length);
+    const n = ed.numberOfWeek || {};
+    const top = { NEWSLETTER_NAME: s.newsletterName, EDITION_NUMBER: ed.number, DATE_LABEL: ed.week, PREHEADER: ed.preheader, INTRO: ed.intro,
+      NUMBER_VALUE: n.value, NUMBER_LABEL: n.label, NUMBER_URL: n.url, DISCUSSION_QUESTION: ed.discussionQuestion, SENDER_NAME: s.senderName, AUDIENCE: s.audience };
+    return h.replace(/{{(\w+)}}/g, (m, k) => k in top ? esc(top[k]) : "");
+  }
+  const SAMPLE = {
+    number: 0, week: "Exemplo", preheader: "", intro: "Exemplo de pré-visualização: conteúdo fictício só para ver o aspeto da template.",
+    numberOfWeek: { value: "00%", label: "Número de exemplo com a respetiva descrição.", url: "#" },
+    discussionQuestion: "Pergunta de exemplo para levar à aula?",
+    items: [1, 2, 3, 4, 5].map((i) => ({ section: i <= 3 ? "geral" : "auto", title: "Título de exemplo da notícia " + i, summary: "Resumo de exemplo com duas frases. Aqui fica o que aconteceu.", whyItMatters: "Frase de exemplo sobre o impacto para profissionais.", source: "Fonte", url: "#", publishedAt: "—" }))
+  };
+
+  function iframe(html, label, right) {
+    return `<div class="preview"><div class="bar"><span>${esc(label)}</span><span>${esc(right || "")}</span></div><iframe sandbox="" title="Pré-visualização do email" srcdoc="${esc(html)}"></iframe></div>`;
+  }
+
+  // ---------- Current edition ----------
+  function currentEdition() {
+    const open = state.editions.filter((e) => ["pending", "changes_requested", "approved"].includes(e.status));
+    return open[0] || state.editions[0] || null;
+  }
+
+  // ---------- Renderers ----------
+  function renderHeader() {
+    const s = state.settings || {};
+    $("nlName").textContent = s.newsletterName || "Newsletter";
+    const on = s.active !== false && !!state.settings;
+    const pill = $("activePill");
+    pill.className = "pill " + (state.settings ? (on ? "s-on" : "s-off") : "s-off");
+    pill.textContent = state.settings ? (on ? "Ativa" : "Em pausa") : "Por configurar";
+    $("prepSched").textContent = s.prepareSchedule || "—";
+    $("sendSched").textContent = s.sendSchedule || "—";
+    $("recCount").textContent = state.recipients.filter((r) => r.active !== false).length;
+    const tg = $("toggleActive");
+    tg.hidden = !(state.canWrite && state.settings);
+    tg.textContent = on ? "Pausar newsletter" : "Retomar newsletter";
+  }
+
+  function renderSemana() {
+    const el = $("tab-semana");
+    const ed = currentEdition();
+    if (!state.db) { el.innerHTML = emptyBox("Abra este painel na sua conta Claude", "Os dados da newsletter só aparecem a quem tem acesso ao painel."); return; }
+    if (!ed) { el.innerHTML = emptyBox("Ainda não há nenhuma edição", "A primeira edição aparece aqui depois da próxima preparação automática. Para a criar já, diga “prepara já a edição” no Projeto da newsletter."); return; }
+    const s = state.settings || {};
+    const items = ed.items || [];
+    const li = (it, i) => `<li class="${it.section === "auto" ? "auto" : ""}"><span class="n">${i}</span><div><div class="t"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.title)}</a></div><div class="why">${esc(it.source)} · ${esc(it.publishedAt)}</div><div class="why">${esc(it.whyItMatters)}</div></div></li>`;
+    const geral = items.filter((i) => i.section === "geral"), auto = items.filter((i) => i.section === "auto");
+    const pendingish = ["pending", "changes_requested"].includes(ed.status);
+    const actions = !state.canWrite ? `<p class="note">Só o dono do painel pode aprovar.</p>` :
+      ed.status === "sent" || ed.status === "skipped" ? "" : `
+      <div class="row">
+        ${pendingish ? `<button class="btn primary" type="button" data-act="approve">Aprovar edição</button>` : ""}
+        ${ed.status === "approved" ? `<button class="btn" type="button" data-act="unapprove">Retirar aprovação</button>` : ""}
+        <button class="btn" type="button" data-act="notes">Pedir alterações</button>
+        <button class="btn danger" type="button" data-act="skip">Não enviar esta semana</button>
+      </div>
+      ${state.showNotes ? `<div class="confirm"><label for="notesInput">O que deve mudar?</label><textarea id="notesInput" placeholder="Ex.: troque a notícia 2 por algo sobre o AI Act; o título da 4 está demasiado longo.">${esc(ed.adminNotes || "")}</textarea><div class="row"><button class="btn primary" type="button" data-act="saveNotes">Guardar pedido</button><button class="btn" type="button" data-act="cancelNotes">Cancelar</button></div><p class="note">Depois diga “aplica as alterações” no Projeto da newsletter e o Claude refaz a edição.</p></div>` : ""}
+      ${state.confirmSkip ? `<div class="confirm"><b>Esta edição não será enviada.</b><div class="row"><button class="btn danger" type="button" data-act="confirmSkip">Confirmar</button><button class="btn" type="button" data-act="cancelSkip">Cancelar</button></div></div>` : ""}`;
+    const info = ed.status === "approved" ? `Será enviada em ${esc(s.sendSchedule || "—")}.` :
+      ed.status === "sent" ? `Enviada ${esc(fmtDate(ed.sentAt))} para ${esc(ed.recipientCount)} pessoas.` :
+      ed.status === "changes_requested" ? `Pedido registado. Diga “aplica as alterações” no Projeto.` :
+      ed.status === "pending" ? `Aprove até ${esc(s.sendSchedule || "à hora de envio")}. Sem aprovação, não é enviada.` : "";
+    el.innerHTML = `<div class="grid2">
+      <div class="panel stack">
+        <div class="row" style="justify-content:space-between"><span class="eyebrow">Edição #${esc(ed.number)} · <span class="mono">${esc(ed.week)}</span></span><span class="pill s-${esc(ed.status)}">${esc(STATUS[ed.status] || ed.status)}</span></div>
+        <h2>${esc(ed.subject)}</h2>
+        ${info ? `<p class="muted" style="margin:0">${info}</p>` : ""}
+        ${actions}
+        ${ed.adminNotes && !state.showNotes ? `<div class="confirm"><span class="eyebrow">Notas</span><span>${esc(ed.adminNotes)}</span></div>` : ""}
+        ${ed.numberOfWeek ? `<div class="big"><strong>${esc(ed.numberOfWeek.value)}</strong><span>${esc(ed.numberOfWeek.label)}</span></div>` : ""}
+        <div><div class="eyebrow sec-label">IA no mundo</div><ul class="news">${geral.map((it, i) => li(it, i + 1)).join("")}</ul></div>
+        <div><div class="eyebrow sec-label auto">IA ao volante</div><ul class="news">${auto.map((it, i) => li(it, geral.length + i + 1)).join("")}</ul></div>
+        ${ed.discussionQuestion ? `<div><div class="eyebrow">Para discutir</div><p class="q">${esc(ed.discussionQuestion)}</p></div>` : ""}
+      </div>
+      ${ed.html ? iframe(ed.html, "Pré-visualização do email", "Template: " + ((state.templates[ed.template] || TPL_FALLBACK[ed.template] || {}).name || ed.template || "—")) : `<div class="panel empty"><h3>Sem HTML</h3><p>Esta edição ainda não tem o email gerado.</p></div>`}
+    </div>`;
+  }
+
+  function renderDest() {
+    const el = $("tab-dest");
+    if (!state.db) { el.innerHTML = emptyBox("Abra este painel na sua conta Claude", ""); return; }
+    const list = [...state.recipients].sort((a, b) => (a.active === false) - (b.active === false) || String(a.email).localeCompare(String(b.email)));
+    const active = list.filter((r) => r.active !== false).length;
+    const form = state.canWrite ? `<div class="panel form" style="margin-bottom:16px">
+        <h3>Adicionar destinatários</h3>
+        <div class="two">
+          <label for="rEmail">Email<input id="rEmail" type="email" autocomplete="off" placeholder="nome@exemplo.pt"></label>
+          <label for="rName">Nome (opcional)<input id="rName" type="text" autocomplete="off"></label>
+          <label for="rGroup">Grupo (opcional)<input id="rGroup" type="text" autocomplete="off" placeholder="Turma 2026"></label>
+        </div>
+        <label for="rBulk">Ou cole vários emails (um por linha, ou separados por vírgulas)<textarea id="rBulk" placeholder="ana@exemplo.pt&#10;rui@exemplo.pt"></textarea></label>
+        <div class="row"><button class="btn primary" type="button" data-act="addRec">Adicionar</button><span class="note" id="addResult"></span></div>
+      </div>` : "";
+    el.innerHTML = form + `<div class="panel">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><h3>${active} ativos</h3><span class="note">${list.length - active} inativos</span></div>
+      ${list.length ? `<div class="table-wrap"><table class="list"><thead><tr><th>Email</th><th>Nome</th><th>Grupo</th><th>Estado</th><th></th></tr></thead><tbody>
+        ${list.map((r) => `<tr class="${r.active === false ? "inactive" : ""}"><td>${esc(r.email)}</td><td>${esc(r.name || "")}</td><td>${esc(r.group || "")}</td>
+          <td>${r.active === false ? `<span class="pill s-off">Inativo</span>${r.removedReason ? `<div class="note">${esc(r.removedReason)}</div>` : ""}` : `<span class="pill s-on">Ativo</span>`}</td>
+          <td>${state.canWrite ? `<button class="link" type="button" data-act="toggleRec" data-id="${esc(r._id)}">${r.active === false ? "Reativar" : "Remover"}</button>` : ""}</td></tr>`).join("")}
+      </tbody></table></div>` : `<div class="empty"><h3>Ainda não há destinatários</h3><p>Adicione os primeiros emails acima, ou diga “adiciona …” no Projeto da newsletter.</p></div>`}
+    </div>`;
+  }
+
+  function renderTpl() {
+    const el = $("tab-tpl");
+    if (!state.db) { el.innerHTML = emptyBox("Abra este painel na sua conta Claude", ""); return; }
+    const s = state.settings || {};
+    const ids = Array.from(new Set(["briefing", "cartoes", "carta", ...Object.keys(state.templates)]));
+    const sel = state.previewTpl || s.template || "briefing";
+    const ed = state.editions.find((e) => (e.items || []).length) || null;
+    const t = state.templates[sel];
+    const html = t ? fill(t.html, ed || SAMPLE, s) : "";
+    el.innerHTML = `<div class="stack">
+      <div class="tpls">${ids.map((id) => { const t = state.templates[id] || TPL_FALLBACK[id] || { name: id }; return `<button class="tpl" type="button" data-act="pickTpl" data-id="${esc(id)}" aria-pressed="${id === sel}">
+        ${id === s.template ? `<span class="pill s-on tag">Em uso</span>` : `<span class="pill s-off tag">Disponível</span>`}
+        <h3>${esc(t.name)}</h3><span class="muted">${esc(t.description || "")}</span></button>`; }).join("")}</div>
+      ${state.canWrite && sel !== s.template && state.settings ? `<div class="row"><button class="btn primary" type="button" data-act="useTpl" data-id="${esc(sel)}">Usar “${esc((state.templates[sel] || TPL_FALLBACK[sel] || {}).name || sel)}” a partir da próxima edição</button></div>` : ""}
+      <p class="note">Para ajustar uma template (cores, rodapé, ordem das secções), peça ao Claude no Projeto da newsletter.</p>
+      ${t ? iframe(html, ed ? `Pré-visualização com a edição #${ed.number}` : "Pré-visualização com conteúdo de exemplo", (state.templates[sel] || {}).name || sel) : `<div class="panel empty"><h3>Template ainda não instalada</h3><p>Diga “instala a newsletter” no Projeto para carregar as templates.</p></div>`}
+    </div>`;
+  }
+
+  function renderHist() {
+    const el = $("tab-hist");
+    if (!state.db) { el.innerHTML = emptyBox("Abra este painel na sua conta Claude", ""); return; }
+    if (!state.editions.length) { el.innerHTML = `<div class="panel empty"><h3>Sem histórico</h3><p>As edições aparecem aqui à medida que são preparadas.</p></div>`; return; }
+    el.innerHTML = `<div class="panel table-wrap"><table class="list"><thead><tr><th>#</th><th>Semana</th><th>Assunto</th><th>Estado</th><th>Enviada</th><th>Pessoas</th></tr></thead><tbody>
+      ${state.editions.map((e) => `<tr><td>${esc(e.number)}</td><td class="mono">${esc(e.week)}</td><td>${esc(e.subject)}</td><td><span class="pill s-${esc(e.status)}">${esc(STATUS[e.status] || e.status)}</span></td><td>${esc(fmtDate(e.sentAt))}</td><td>${esc(e.recipientCount ?? "—")}</td></tr>`).join("")}
+    </tbody></table></div>`;
+  }
+
+  function renderDef() {
+    const el = $("tab-def");
+    if (!state.db) { el.innerHTML = emptyBox("Abra este painel na sua conta Claude", ""); return; }
+    if (!state.settings) { el.innerHTML = `<div class="panel empty"><h3>Newsletter por configurar</h3><p>Diga “instala a newsletter” no Projeto da newsletter.</p></div>`; return; }
+    const s = state.settings;
+    const dis = state.canWrite ? "" : "disabled";
+    el.innerHTML = `<div class="panel form">
+      <div class="two">
+        <label for="sName">Nome da newsletter<input id="sName" ${dis} value="${esc(s.newsletterName)}"></label>
+        <label for="sSender">Assinatura<input id="sSender" ${dis} value="${esc(s.senderName)}"></label>
+        <label for="sAdmin">Email do admin<input id="sAdmin" type="email" ${dis} value="${esc(s.adminEmail)}"></label>
+      </div>
+      <label for="sAudience">Público (aparece no rodapé)<input id="sAudience" ${dis} value="${esc(s.audience)}"></label>
+      <label for="sFocus">Preferências editoriais<textarea id="sFocus" ${dis} placeholder="Ex.: mais regulação europeia; evitar notícias de rondas de investimento.">${esc(s.focusNotes)}</textarea></label>
+      <div class="two">
+        <div class="kv"><span class="eyebrow">Preparação</span><b>${esc(s.prepareSchedule)}</b></div>
+        <div class="kv"><span class="eyebrow">Envio</span><b>${esc(s.sendSchedule)}</b></div>
+        <div class="kv"><span class="eyebrow">Fuso horário</span><b>${esc(s.timezone)}</b></div>
+      </div>
+      <p class="note">Para mudar o dia ou a hora, diga por exemplo “muda o envio para segunda às 8h” no Projeto da newsletter.</p>
+      ${state.canWrite ? `<div class="row"><button class="btn primary" type="button" data-act="saveSettings">Guardar definições</button></div>` : ""}
+    </div>`;
+  }
+
+  function emptyBox(t, p) { return `<div class="panel empty"><h3>${esc(t)}</h3>${p ? `<p>${esc(p)}</p>` : ""}</div>`; }
+  function renderAll() { renderHeader(); renderSemana(); renderDest(); renderTpl(); renderHist(); renderDef(); }
+
+  // ---------- Actions ----------
+  document.addEventListener("click", async (ev) => {
+    const b = ev.target.closest("[data-act]"); if (!b) return;
+    const act = b.dataset.act;
+    const ed = currentEdition();
+    if (act === "approve" && ed) { if (await write("editions/" + ed._id, { status: "approved", approvedAt: now(), approvedVia: "painel" })) toast("Edição aprovada"); }
+    else if (act === "unapprove" && ed) { if (await write("editions/" + ed._id, { status: "pending", approvedAt: null })) toast("Aprovação retirada"); }
+    else if (act === "notes") { state.showNotes = true; state.confirmSkip = false; renderSemana(); const n = $("notesInput"); if (n) n.focus(); }
+    else if (act === "cancelNotes") { state.showNotes = false; renderSemana(); }
+    else if (act === "saveNotes" && ed) { const v = ($("notesInput").value || "").trim(); if (!v) { toast("Escreva o que deve mudar"); return; } if (await write("editions/" + ed._id, { status: "changes_requested", adminNotes: v })) { state.showNotes = false; toast("Pedido de alterações guardado"); } }
+    else if (act === "skip") { state.confirmSkip = true; state.showNotes = false; renderSemana(); }
+    else if (act === "cancelSkip") { state.confirmSkip = false; renderSemana(); }
+    else if (act === "confirmSkip" && ed) { if (await write("editions/" + ed._id, { status: "skipped" })) { state.confirmSkip = false; toast("Esta semana não será enviada"); } }
+    else if (act === "pickTpl") { state.previewTpl = b.dataset.id; renderTpl(); }
+    else if (act === "useTpl") { if (await write("config/settings", { template: b.dataset.id, updatedAt: now() })) { state.previewTpl = null; toast("Template alterada"); } }
+    else if (act === "addRec") { await addRecipients(); }
+    else if (act === "toggleRec") {
+      const r = state.recipients.find((x) => x._id === b.dataset.id); if (!r) return;
+      const off = r.active !== false;
+      const data = off ? { active: false, removedAt: now(), removedReason: "Removido no painel" } : { active: true, removedAt: null, removedReason: null };
+      if (await write("recipients/" + r._id, data)) toast(off ? "Removido da lista" : "Reativado");
+    }
+    else if (act === "saveSettings") {
+      const data = { newsletterName: $("sName").value.trim(), senderName: $("sSender").value.trim(), adminEmail: $("sAdmin").value.trim(), audience: $("sAudience").value.trim(), focusNotes: $("sFocus").value.trim(), updatedAt: now() };
+      if (!data.newsletterName || !/^\S+@\S+\.\S+$/.test(data.adminEmail)) { toast("Indique um nome e um email de admin válido"); return; }
+      if (await write("config/settings", data)) toast("Definições guardadas");
+    }
+  });
+  $("toggleActive").addEventListener("click", async () => {
+    const on = state.settings && state.settings.active !== false;
+    if (await write("config/settings", { active: !on, updatedAt: now() })) toast(on ? "Newsletter em pausa" : "Newsletter retomada");
+  });
+
+  async function addRecipients() {
+    const single = ($("rEmail").value || "").trim();
+    const bulk = ($("rBulk").value || "").split(/[\s,;]+/).map((x) => x.trim()).filter(Boolean);
+    const all = (single ? [single] : []).concat(bulk).map((x) => x.toLowerCase());
+    const valid = [], invalid = [], dup = [];
+    const existing = new Set(state.recipients.map((r) => r._id));
+    all.forEach((e) => {
+      if (!/^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/.test(e)) invalid.push(e);
+      else if (existing.has(e) || valid.includes(e)) dup.push(e);
+      else valid.push(e);
+    });
+    if (!all.length) { toast("Escreva pelo menos um email"); return; }
+    let ok = 0;
+    for (const e of valid) {
+      const data = { email: e, name: single && e === single.toLowerCase() ? $("rName").value.trim() : "", group: $("rGroup").value.trim(), active: true, addedAt: now() };
+      if (await write("recipients/" + e, data, "set")) ok++;
+    }
+    const parts = [ok + " adicionados"];
+    if (dup.length) parts.push(dup.length + " já existiam");
+    if (invalid.length) parts.push("inválidos: " + invalid.join(", "));
+    const res = $("addResult"); if (res) res.textContent = parts.join(" · ");
+    if (ok) { $("rEmail").value = ""; $("rName").value = ""; $("rBulk").value = ""; }
+  }
+
+  // ---------- Boot ----------
+  renderAll();
+  (async function () {
+    const api = window.claude && window.claude.use ? window.claude : null;
+    const db = api ? await api.use("db") : null;
+    const user = api ? await api.use("user") : null;
+    state.db = db;
+    if (!db) { renderAll(); return; }
+    try { state.canWrite = user ? (await user.canEdit()) === true : true; } catch (e) { state.canWrite = true; }
+    const snapList = (q) => q.docs.filter((d) => d.exists).map((d) => Object.assign({ _id: d.id }, d.data()));
+    db.doc("config/settings").onSnapshot((snap) => { state.settings = snap.exists ? snap.data() : null; renderAll(); }, () => {});
+    db.collection("editions").orderBy("week", "desc").limit(60).onSnapshot((q) => { state.editions = snapList(q); renderAll(); }, () => {});
+    db.collection("recipients").limit(1000).onSnapshot((q) => { state.recipients = snapList(q); renderHeader(); renderDest(); }, () => {});
+    db.collection("templates").onSnapshot((q) => { const o = {}; snapList(q).forEach((t) => { o[t._id] = t; }); state.templates = o; renderSemana(); renderTpl(); }, () => {});
+    renderAll();
+  })();
+})();
+</script>
